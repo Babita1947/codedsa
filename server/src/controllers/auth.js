@@ -91,7 +91,7 @@ export const loginController = async (req, res) => {
         };
 
 
-        const jwtdata = jwt.sign(payload, process.env.JWT_SECRET, {
+        const jwtdata = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
             expiresIn: process.env.JWT_EXPIRES_IN || "2d",
         });
 
@@ -115,31 +115,22 @@ export const loginController = async (req, res) => {
 
 export const verifyTokenController = async (req, res) => {
     try {
-        const user_id = req.user.data.user_id;
-        if (!user_id) {
+        if (!req.user) {
             return res.status(404).json({
                 success: false,
-                message: "Missing user id"
-            });
-        }
-        const userExist = await User.findById(user_id);
-        if (!userExist) {
-            return res.status(404).json({
-                success: false,
-                message: "User Not Exist!"
+                message: "User not found!"
             });
         }
         return res.status(200).json({
             success: true,
             message: "User Authentication successful !",
-            role: userExist.role
-        })
-    }
-    catch (error) {
+            role: req.user.role
+        });
+    } catch (error) {
         console.log("VerifyTokenController", error);
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error to VerifyTokenController"
+            message: "Internal Server Error in VerifyTokenController"
         });
     }
 };

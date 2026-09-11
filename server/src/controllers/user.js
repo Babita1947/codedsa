@@ -7,7 +7,7 @@ export const updateuserController = async (req, res) => {
 
     // const params = req.params;
     // console.log("Params....", params);
-    const user_id = req.user.data.user_id;
+    const user_id = req.user._id;
 
     try {
         const {
@@ -45,7 +45,9 @@ export const updateuserController = async (req, res) => {
 }
 
 export const getUserController = async (req, res) => {
-    const user_id = req.user.data.user_id;
+    // console.log("User ", req.user);
+    const user_id = req.user._id;
+    // console.log("User ID ", user_id);
 
     try {
         const user = await User.findById(user_id);

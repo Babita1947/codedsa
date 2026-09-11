@@ -1,6 +1,6 @@
 import { authEndpoints } from "@/services/api";
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 const AuthContext = createContext();
@@ -14,13 +14,13 @@ export const AuthProvider = ({ children }) => {
     // check if token is present in localstorage or not
     useEffect(() => {
         const tokenFromLocalStorage = localStorage.getItem("token");
-        if (!tokenFromLocalStorage) {
+        if (!tokenFromLocalStorage || tokenFromLocalStorage === "undefined" || tokenFromLocalStorage === "null") {
             setIsAuthenticated(false);
             setLoading(false);
-            navigate("/signin")
+            navigate("/signin");
             return;
         }
-    }, [isAuthenticated])
+    }, [isAuthenticated]);
 
     useEffect(() => {
         // sabse pehle token ko frontend se uthayenge

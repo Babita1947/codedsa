@@ -9,21 +9,21 @@ export const authMiddleware = async (req, res, next) => {
             token = req.headers.authorization.split(" ")[1];
         }
 
-        // validation
-        if (!token) {
+        // Validate presence and that it's not "undefined" or "null" string
+        if (!token || token === "undefined" || token === "null") {
             return res.status(400).json({ // bad request
                 success: false,
                 message: "Not Authenticated"
-            })
+            });
         }
 
         //token verification
-        const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
         if (!payload) {
             return res.status(401).json({ //Unauthorized
                 success: false,
-                message: "JWT Verification Failed"
-            })
+                message: "Invalid or expired token"
+            });
         }
 
         const user = await User.findById(payload.user_id);
@@ -44,6 +44,6 @@ export const authMiddleware = async (req, res, next) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error in auth middleware"
-        })
+        });
     }
 }
