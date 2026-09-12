@@ -8,7 +8,7 @@ import Footer from './components/ui/Footer';
 import QuestionDescription from './pages/QuestionDescription';
 import Profile from './pages/Profile';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/ui/app-sidebar"
 import AdminProblems from './components/admin/AdminProblems';
 import AdminUsers from './components/admin/AdminUsers';
 import AdminAddProblem from './components/admin/AdminAddProblem';
