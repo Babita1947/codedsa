@@ -35,45 +35,47 @@ const QuestionDescription = () => {
     }, [problemId]);
 
     return (
-        <div className="w-full max-h-screen">
+        <div className="w-full h-screen flex flex-col bg-[#f0f0f0] dark:bg-[#1a1a1a] text-neutral-800 dark:text-neutral-200 transition-colors overflow-hidden font-sans">
             <Header />
-            <ResizablePanelGroup
-                direction="horizontal"
-                className="w-full h-full"
-            >
-                <ResizablePanel defaultSize={50}>
-                    <div className="h-full p-2 overflow-auto">
-                        <LeftSide
-                            activeTab={activeTab}
-                            setActiveTab={setActiveTab}
-                            problem={problem}
-                        />
-                    </div>
-                </ResizablePanel>
+            <div className="flex-1 p-2 overflow-hidden">
+                <ResizablePanelGroup
+                    direction="horizontal"
+                    className="w-full h-full gap-1.5"
+                >
+                    <ResizablePanel defaultSize={50} minSize={25}>
+                        <div className="h-full overflow-hidden">
+                            <LeftSide
+                                activeTab={activeTab}
+                                setActiveTab={setActiveTab}
+                                problem={problem}
+                            />
+                        </div>
+                    </ResizablePanel>
 
-                <ResizableHandle withHandle />
+                    <ResizableHandle className="w-1 rounded bg-transparent hover:bg-[#00b8a3]/60 transition-colors cursor-col-resize" />
 
-                <ResizablePanel key={size} defaultSize={size}>
-                    <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel defaultSize={75}>
-                            <div className="p-2 h-full">
-                                <RightSide
-                                    setSize={setSize}
-                                    initialCode={problem?.boiler_plate_code}
-                                />
-                            </div>
-                        </ResizablePanel>
+                    <ResizablePanel key={size} defaultSize={size} minSize={25}>
+                        <ResizablePanelGroup direction="vertical" className="gap-1.5">
+                            <ResizablePanel defaultSize={70} minSize={25}>
+                                <div className="h-full overflow-hidden">
+                                    <RightSide
+                                        setSize={setSize}
+                                        initialCode={problem?.boiler_plate_code}
+                                    />
+                                </div>
+                            </ResizablePanel>
 
-                        <ResizableHandle withHandle />
+                            <ResizableHandle className="h-1 rounded bg-transparent hover:bg-[#00b8a3]/60 transition-colors cursor-row-resize" />
 
-                        <ResizablePanel defaultSize={25}>
-                            <div className="w-full h-full p-2 ">
-                                <TestCase examples={problem.examples} />
-                            </div>
-                        </ResizablePanel>
-                    </ResizablePanelGroup>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+                            <ResizablePanel defaultSize={30} minSize={15}>
+                                <div className="w-full h-full overflow-hidden">
+                                    <TestCase examples={problem.examples} />
+                                </div>
+                            </ResizablePanel>
+                        </ResizablePanelGroup>
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </div>
         </div>
     );
 };

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, TerminalSquare, SquareTerminal } from 'lucide-react';
+import { Terminal, Copy, Check } from 'lucide-react';
 
 const TestCase = ({ examples }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [example, setExample] = useState({});
+  const [copied, setCopied] = useState(false);
 
   const onClickTestCase = (ind) => {
     setActiveIndex(ind);
@@ -16,52 +17,76 @@ const TestCase = ({ examples }) => {
     }
   }, [examples]);
 
+  const copyTestCase = () => {
+    if (!example) return;
+    navigator.clipboard.writeText(`Input: ${example.input}\nOutput: ${example.output}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="w-full p-6 bg-white rounded-2xl shadow-md border border-gray-200">
-      {/* Tabs */}
-      <div className="flex items-center gap-3 border-b pb-3 mb-6">
-        {examples?.map((_, ind) => (
-          <button
-            onClick={() => onClickTestCase(ind)}
-            key={ind}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-150 border ${activeIndex === ind
-                ? "bg-indigo-100 text-indigo-700 border-indigo-400 shadow-sm"
-                : "text-gray-600 border-transparent hover:bg-gray-100"
+    <div className="w-full h-full p-3 bg-white dark:bg-[#282828] rounded-lg shadow-xs border border-neutral-200 dark:border-[#333333] text-neutral-800 dark:text-neutral-200 transition-colors flex flex-col overflow-hidden font-sans">
+      {/* Top Testcase Tabs Header */}
+      <div className="flex items-center justify-between gap-2 border-b border-neutral-200 dark:border-[#333333] pb-2 mb-2.5 flex-shrink-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          <Terminal size={14} className="text-[#00b8a3] mr-0.5 flex-shrink-0" />
+          <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 mr-1 select-none hidden sm:inline">
+            Testcase
+          </span>
+          <div className="h-3.5 w-px bg-neutral-200 dark:bg-[#383838] mx-0.5" />
+          {examples?.map((_, ind) => (
+            <button
+              onClick={() => onClickTestCase(ind)}
+              key={ind}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer select-none flex-shrink-0 ${
+                activeIndex === ind
+                  ? "bg-neutral-200 dark:bg-[#383838] text-neutral-900 dark:text-white font-semibold"
+                  : "text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-[#303030]"
               }`}
-          >
-            Case {ind + 1}
-          </button>
-        ))}
+            >
+              Case {ind + 1}
+            </button>
+          ))}
+        </div>
+
         <button
-          className="ml-auto px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-100 rounded-md flex items-center gap-1 cursor-not-allowed"
-          disabled
+          onClick={copyTestCase}
+          className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 px-2 py-0.5 rounded hover:bg-neutral-100 dark:hover:bg-[#333333] transition cursor-pointer flex-shrink-0"
         >
-          <Plus size={16} />
-          Add
+          {copied ? (
+            <>
+              <Check size={12} className="text-[#00b8a3]" />
+              <span className="text-[#00b8a3]">Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy size={12} />
+              <span>Copy</span>
+            </>
+          )}
         </button>
       </div>
 
-      <div className="grid gap-6">
+      {/* Case Input / Output Panels */}
+      <div className="flex-1 overflow-y-auto space-y-2.5 pr-0.5">
         <div>
-          <label className="flex items-center gap-2 font-semibold text-gray-700 mb-1">
-            {/* <TerminalSquare size={18} /> */}
-            Input
+          <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">
+            Input:
           </label>
-          <div className="bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm font-mono text-gray-800 whitespace-pre-wrap">
-            {example.input}
+          <div className="p-2.5 rounded-md bg-neutral-50 dark:bg-[#202020] border border-neutral-200 dark:border-[#383838] text-xs font-mono text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap select-text">
+            <code>{example?.input || ""}</code>
           </div>
         </div>
+
         <div>
-          <label className="flex items-center gap-2 font-semibold text-gray-700 mb-1">
-            {/* <SquareTerminal size={18} /> */}
-            Output
+          <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">
+            Expected Output:
           </label>
-          <div className="bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm font-mono text-gray-800 whitespace-pre-wrap">
-            {example.output}
+          <div className="p-2.5 rounded-md bg-neutral-50 dark:bg-[#202020] border border-neutral-200 dark:border-[#383838] text-xs font-mono text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap select-text">
+            <code>{example?.output || ""}</code>
           </div>
         </div>
       </div>
-
     </div>
   );
 };

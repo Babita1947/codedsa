@@ -1,77 +1,65 @@
-import React, { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileText, PenTool, Lightbulb, ClipboardList, Bot } from "lucide-react";
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText, ClipboardList, Bot, Sparkles, BookOpen } from "lucide-react";
 import ProblemDetail from './ProblemDetail';
 import Chatbot from '@/pages/Chatbot';
 
 export const LeftSide = ({ activeTab, setActiveTab, problem }) => {
-  const [messageHistory, setMessageHistory] = useState([]); // {role: "system | user", message: "string"}
-  console.log("Problem :", problem);
-  const openChatAI = (tab) => {
-    setActiveTab(tab);
-  }
+  const [messageHistory, setMessageHistory] = useState([]);
+
   return (
-    <div className="w-full relative">
-  <Tabs defaultValue="description" className="w-full max-w-4xl mx-auto">
-    
-    {/* Tabs List */}
-    <TabsList className="flex overflow-x-auto no-scrollbar gap-2 w-full h-14 p-2 shadow-sm sticky top-0 bg-white z-20 border-t-2">
-      <TabsTrigger
-        value="description"
-        className="flex items-center justify-center gap-1 px-3 py-2 min-w-[100px] rounded-md text-sm font-medium transition-all duration-150 data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm hover:bg-gray-100 text-gray-600"
-      >
-        <FileText size={16} /> Description
-      </TabsTrigger>
+    <div className="w-full h-full flex flex-col rounded-lg border border-neutral-200 dark:border-[#333333] bg-white dark:bg-[#282828] shadow-xs overflow-hidden transition-colors">
+      <Tabs defaultValue="description" className="w-full h-full flex flex-col">
 
-      {/* <TabsTrigger
-        value="editorial"
-        className="flex items-center justify-center gap-1 px-3 py-2 min-w-[100px] rounded-md text-sm font-medium transition-all duration-150 data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm hover:bg-gray-100 text-gray-600"
-      >
-        <PenTool size={16} /> Editorial
-      </TabsTrigger>
+        {/* LeetCode Header Tab Bar */}
+        <div className="px-3 py-1.5 bg-neutral-50 dark:bg-[#202020] border-b border-neutral-200 dark:border-[#333333] flex items-center justify-between">
+          <TabsList className="bg-transparent p-0 h-auto gap-1">
+            <TabsTrigger
+              value="description"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-[#333333] data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white cursor-pointer shadow-none data-[state=active]:shadow-xs"
+            >
+              <FileText size={14} className="text-[#00b8a3]" />
+              <span>Description</span>
+            </TabsTrigger>
 
-      <TabsTrigger
-        value="solutions"
-        className="flex items-center justify-center gap-1 px-3 py-2 min-w-[100px] rounded-md text-sm font-medium transition-all duration-150 data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm hover:bg-gray-100 text-gray-600"
-      >
-        <Lightbulb size={16} /> Solutions
-      </TabsTrigger> */}
+            <TabsTrigger
+              value="submissions"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-[#333333] data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white cursor-pointer shadow-none data-[state=active]:shadow-xs"
+            >
+              <ClipboardList size={14} className="text-amber-500" />
+              <span>Submissions</span>
+            </TabsTrigger>
 
-      <TabsTrigger
-        value="submissions"
-        className="flex items-center justify-center gap-1 px-3 py-2 min-w-[100px] rounded-md text-sm font-medium transition-all duration-150 data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm hover:bg-gray-100 text-gray-600"
-      >
-        <ClipboardList size={16} /> Submissions
-      </TabsTrigger>
+            <TabsTrigger
+              value="chat_ai"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all data-[state=active]:bg-white dark:data-[state=active]:bg-[#333333] data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white cursor-pointer shadow-none data-[state=active]:shadow-xs"
+            >
+              <Bot size={14} className="text-purple-400" />
+              <span>AI Assistant</span>
+              <span className="text-[10px] bg-purple-500/15 text-purple-600 dark:text-purple-300 font-semibold px-1 rounded">
+                AI
+              </span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      <TabsTrigger
-        value="chat_ai"
-        className="flex items-center justify-center gap-1 px-3 py-2 min-w-[100px] rounded-md text-sm font-medium transition-all duration-150 data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm hover:bg-gray-100 text-gray-600"
-      >
-        <Bot size={16} /> Chat AI
-      </TabsTrigger>
-    </TabsList>
-
-    {/* Tabs Content */}
-    <div className="h-[calc(100vh-140px)] relative overflow-y-auto">
-      <TabsContent value="description">
-        <ProblemDetail problem={problem} />
-      </TabsContent>
-      <TabsContent value="editorial">
-        <p className="text-gray-700">Editorial coming soon.</p>
-      </TabsContent>
-      <TabsContent value="solutions">
-        <p className="text-gray-700">Explore different solutions here.</p>
-      </TabsContent>
-      <TabsContent value="submissions">
-        <p className="text-gray-700">Your past submissions will show up here.</p>
-      </TabsContent>
-      <TabsContent value="chat_ai">
-        <Chatbot problemId={problem?._id} messageHistory={messageHistory} setMessageHistory={setMessageHistory}/>
-      </TabsContent>
+        {/* Scrollable Content Container */}
+        <div className="flex-1 p-5 overflow-y-auto custom-scrollbar">
+          <TabsContent value="description" className="mt-0 outline-none">
+            <ProblemDetail problem={problem} />
+          </TabsContent>
+          <TabsContent value="submissions" className="mt-0 outline-none">
+            <div className="py-16 text-center text-neutral-400 dark:text-neutral-500 text-xs">
+              <ClipboardList className="w-8 h-8 mx-auto mb-2 opacity-40" />
+              <p className="font-medium text-neutral-700 dark:text-neutral-300 text-sm">No Submissions Yet</p>
+              <p className="mt-1">When you submit your code, your result and execution stats will be saved here.</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="chat_ai" className="mt-0 outline-none h-full">
+            <Chatbot problemId={problem?._id} messageHistory={messageHistory} setMessageHistory={setMessageHistory} />
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
-  </Tabs>
-</div>
-
-  )
-}
+  );
+};
