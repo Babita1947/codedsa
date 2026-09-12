@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter } from "lucide-react"
+import { Search, Shuffle, ChevronDown } from "lucide-react";
 import axios from 'axios';
 import Question from '../components/Question/Question';
 import {
@@ -13,13 +13,30 @@ import {
 } from "@/components/ui/pagination";
 import { problemEndpoints } from '@/services/api';
 import Loading from '@/components/auth/Loading';
+import { useNavigate } from 'react-router-dom';
+
+const TOPICS = [
+  "All Topics",
+  "Array",
+  "String",
+  "Hash Table",
+  "Dynamic Programming",
+  "Math",
+  "Sorting",
+  "Greedy",
+  "Tree",
+  "Binary Search",
+  "Two Pointers"
+];
 
 const Problems = () => {
   const [problems, setProblems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortLevel, setSortLevel] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState('All Topics');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const fetch_problem_list = async () => {
     try {
@@ -31,7 +48,7 @@ const Problems = () => {
           sortLevel: sortLevel
         }
       });
-      setProblems(response.data.data);
+      setProblems(response.data.data || []);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching problems:", error);
@@ -44,6 +61,17 @@ const Problems = () => {
     fetch_problem_list();
   }, [searchTerm, sortLevel]);
 
+  const handleRandomProblem = () => {
+    if (problems.length > 0) {
+      const rand = problems[Math.floor(Math.random() * problems.length)];
+      navigate(`/problems/${rand.title}`, { state: rand._id });
+    }
+  };
+
+  const filteredProblems = problems.filter((prob) => {
+    if (selectedTopic === 'All Topics') return true;
+    return prob?.topic?.toLowerCase() === selectedTopic.toLowerCase();
+  });
 
   if (loading) {
     return (
@@ -56,110 +84,109 @@ const Problems = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-lg text-red-500">Error: {error}</p>
+        <p className="text-sm text-red-500">Error: {error}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto min-h-screen px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto pt-3 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8 tracking-tight">
-          Problems
-        </h2>
+    <div className="max-w-6xl mx-auto min-h-screen px-4 sm:px-6 lg:px-8 py-6 text-neutral-800 dark:text-neutral-200 font-sans">
+      
+      {/* Topic Filter Pills */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-3 mb-4">
+        {TOPICS.map((topic) => (
+          <button
+            key={topic}
+            onClick={() => setSelectedTopic(topic)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition cursor-pointer select-none ${
+              selectedTopic === topic
+                ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-xs"
+                : "bg-neutral-100 dark:bg-[#282828] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#333333]"
+            }`}
+          >
+            {topic}
+          </button>
+        ))}
+      </div>
 
-        {/* Search & Filter - LeetCode style */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 border-b border-gray-200 pb-4 mb-6">
+      {/* Search & Filter Toolbar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2 w-full sm:w-auto flex-1 max-w-lg">
           {/* Search Input */}
-          <div className="relative w-full sm:w-1/2">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400" />
             <input
               id="search"
               type="text"
-              placeholder="Search problems by title..."
+              placeholder="Search questions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
+              className="w-full bg-neutral-50 dark:bg-[#202020] border border-neutral-200 dark:border-[#383838] text-neutral-900 dark:text-neutral-100 rounded-md pl-9 pr-3 py-1.5 text-xs focus:outline-none focus:border-[#00b8a3] placeholder:text-neutral-400"
             />
           </div>
 
-          {/* Sort Dropdown */}
-          <div className="relative w-full sm:w-44">
+          {/* Difficulty Dropdown */}
+          <div className="relative w-36">
             <select
               id="sort"
               value={sortLevel}
               onChange={(e) => setSortLevel(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base cursor-pointer appearance-none"
+              className="w-full bg-neutral-50 dark:bg-[#202020] border border-neutral-200 dark:border-[#383838] text-neutral-900 dark:text-neutral-100 rounded-md px-3 py-1.5 pr-7 text-xs focus:outline-none focus:border-[#00b8a3] cursor-pointer appearance-none"
             >
-              <option value="">All Difficulties</option>
-              <option value="Easy">Easy</option>
-              <option value="Medium">Medium</option>
-              <option value="Hard">Hard</option>
+              <option value="" className="dark:bg-[#202020]">Difficulty</option>
+              <option value="Easy" className="dark:bg-[#202020]">Easy</option>
+              <option value="Medium" className="dark:bg-[#202020]">Medium</option>
+              <option value="Hard" className="dark:bg-[#202020]">Hard</option>
             </select>
-            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-              <svg
-                className="w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+            <ChevronDown className="w-3.5 h-3.5 text-neutral-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
 
-        {/* Results Summary */}
-        {(searchTerm || sortLevel) && (
-          <div className="flex flex-wrap items-center gap-2 mb-6 text-sm text-gray-600">
-            <span>Filtering:</span>
-            {searchTerm && (
-              <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium text-xs sm:text-sm">
-                "{searchTerm}"
-              </span>
-            )}
-            {sortLevel && (
-              <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full font-medium text-xs sm:text-sm">
-                {sortLevel}
-              </span>
-            )}
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                setSortLevel("");
-              }}
-              className="text-indigo-600 hover:text-indigo-800 font-medium ml-2 transition-colors duration-200 text-xs sm:text-sm"
-            >
-              Clear all
-            </button>
-          </div>
-        )}
+        {/* Pick One Random Button */}
+        <button
+          onClick={handleRandomProblem}
+          className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-[#00b8a3]/10 hover:bg-[#00b8a3]/20 text-[#00b8a3] rounded-md text-xs font-medium transition cursor-pointer select-none border border-[#00b8a3]/20"
+        >
+          <Shuffle className="w-3.5 h-3.5" />
+          <span>Pick One</span>
+        </button>
       </div>
 
+      {/* Problem Table Card */}
+      <div className="rounded-lg border border-neutral-200 dark:border-[#333333] bg-white dark:bg-[#1f1f1f] shadow-xs overflow-hidden">
+        {/* Table Header */}
+        <div className="flex items-center justify-between px-4 py-2.5 bg-neutral-50 dark:bg-[#262626] border-b border-neutral-200 dark:border-[#333333] text-xs font-medium text-neutral-500 dark:text-neutral-400">
+          <span className="flex-1">Title</span>
+          <div className="flex items-center gap-4 sm:gap-8 flex-shrink-0">
+            <span className="hidden md:inline-block w-24">Topic</span>
+            <span className="w-16">Difficulty</span>
+            <span className="hidden sm:inline-block w-16 text-right">Status</span>
+          </div>
+        </div>
 
-
-      {/* Problems List */}
-      <div className="mt-4 space-y-4 sm:space-y-6">
-        {problems.length > 0 ? (
-          problems.map((problem, ind) => (
-            <Question index={ind} key={problem._id} problem={problem} />
-          ))
-        ) : (
-          <p className="text-center text-gray-500 mt-6 text-sm sm:text-base">
-            No problems found.
-          </p>
-        )}
+        {/* Problem Rows */}
+        <div className="divide-y divide-neutral-100 dark:divide-[#2a2a2a]">
+          {filteredProblems.length > 0 ? (
+            filteredProblems.map((problem, ind) => (
+              <Question index={ind} key={problem._id || ind} problem={problem} />
+            ))
+          ) : (
+            <p className="text-center text-neutral-400 dark:text-neutral-500 py-12 text-xs">
+              No problems found matching your criteria.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
-      <div className="mt-6 sm:mt-8 flex justify-center">
+      <div className="mt-6 flex justify-center">
         <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious href="#" />
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
+              <PaginationLink href="#" isActive>1</PaginationLink>
             </PaginationItem>
             <PaginationItem>
               <PaginationEllipsis />
@@ -171,7 +198,6 @@ const Problems = () => {
         </Pagination>
       </div>
     </div>
-
   );
 };
 
