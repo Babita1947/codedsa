@@ -24,11 +24,10 @@ const chatbotController = async (req, res) => {
         res.setHeader("Connection", "keep-alive");
 
         const chatResponse = await client.chat.stream({
-            model: 'mistral-large-latest',
+            model: 'open-mistral-7b',
             messages: [
-                { role: 'system', content: JSON.stringify(problem)},
-                { role: 'system', content: "Only answer questions related to the given problem. don't answer the questions out of this or tell i don't know "},
-                { role: "system", content: "Strictly return the output in markdown format. For new lines, use <br/>." },
+                { role: 'system', content: `You are an expert DSA coding assistant. The problem details are: ${JSON.stringify(problem)}` },
+                { role: 'system', content: "Only answer questions related to the given problem. Provide clear, well-structured answers using standard Markdown (with headers, bullet points, syntax-highlighted code blocks, and well-formatted tables). When creating Markdown tables, ALWAYS place each row on a separate new line and separate the header from data rows with standard Markdown delimiter '|---|'." },
                 { role: 'user', content: prompt }
             ],
         });
@@ -36,7 +35,8 @@ const chatbotController = async (req, res) => {
         for await (const item of chatResponse) {
             const streamText = item.data.choices[0]?.delta?.content;
             if (typeof streamText === "string") {
-                res.write(`data: ${streamText}\n\n`);
+                // Send JSON encoded chunk so newlines and spaces are never lost
+                res.write(`data: ${JSON.stringify({ text: streamText })}\n\n`);
             }
         }
 
