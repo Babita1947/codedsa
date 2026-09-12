@@ -7,8 +7,10 @@ import userRouter from './src/routes/user.js';
 import adminUserRoutes from './src/routes/admin.js';
 import chatbotRoutes from './src/routes/chatbot.js';
 import db_connection from './src/database/db_connection.js';
+import multer from 'multer';
 
 const app = express();
+const upload = multer();
 const port = process.env.PORT;
 
 //Frontend is connected to Backend
@@ -21,6 +23,7 @@ app.use(cors({
   }));
   
 app.use(express.json());
+app.use("/uploads", express.static("uploads")); // Serve static images from /uploads folder
 
 app.get("/",(req, res)=>{
     res.send("Home page !!!!!");
@@ -33,6 +36,7 @@ app.use("/api/v1/problems", problemRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminUserRoutes);
 app.use("/api/v1/chatbot", chatbotRoutes);
+
 
 app.listen(port, ()=>{
     console.log(`project is running on http://localhost:${port}`);

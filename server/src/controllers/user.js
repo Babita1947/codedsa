@@ -72,3 +72,39 @@ export const getUserController = async (req, res) => {
         });
     }
 }   
+
+
+
+export const uploadProfilePicController = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No file uploaded"
+            });
+        }
+
+        // The relative path where the file is stored
+        const filePath = `/uploads/${req.file.filename}`;
+
+        // Update the user's profile_pic in MongoDB
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user._id,
+            { profile_pic: filePath },
+            { new: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile picture uploaded successfully!",
+            profile_pic: filePath,
+            data: updatedUser
+        });
+    } catch (error) {
+        console.error("Profile upload error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error during profile upload"
+        });
+    }
+};

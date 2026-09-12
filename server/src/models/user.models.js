@@ -51,6 +51,9 @@ const userSchema = new mongoose.Schema({
   total_submission: {
     type: Number,
     default: 0,
+  },
+  profile_pic: {
+    type: String,
   }
 }, { timestamps: true });
 
