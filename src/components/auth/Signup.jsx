@@ -5,8 +5,8 @@ import { authEndpoints } from '@/services/api';
 
 const Signup = () => {
     const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [isSignuping, setIsSignuping] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -14,11 +14,7 @@ const Signup = () => {
     const register = async (e) => {
         setIsSignuping(true);
         e.preventDefault();
-        console.log("Username = ", username)
-        console.log("Email = ", email)
-        console.log("Password = ", password)
 
-        // connect with backend
         try {
             const response = await axios({
                 method: "POST",
@@ -29,62 +25,56 @@ const Signup = () => {
                     password: password
                 }
             });
-            console.log(response);
-            if (response.status == 201) {
+            if (response.status === 201) {
                 navigate("/signin");
             }
-
         } catch (err) {
-            console.log(err.response)
-            setError(err?.response?.data?.detail);
-            if (err.response.status == 409) {
-                // Redirect to Sign in page
-                navigate("/signin")
-
+            console.error(err.response);
+            setError(err?.response?.data?.detail || "Registration failed");
+            if (err.response?.status === 409) {
+                navigate("/signin");
             }
-
         }
         setIsSignuping(false);
-
-    }
+    };
 
     return (
-        <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center px-6 py-8">
-            <div className="w-full max-w-md bg-white rounded-lg shadow dark:border dark:bg-gray-800 dark:border-gray-700">
-                <div className="p-6 space-y-6">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
-                        Create a new account
+        <div className="bg-neutral-50 dark:bg-[#1a1a1a] min-h-[calc(100vh-100px)] flex items-center justify-center px-4 py-8 font-sans text-neutral-800 dark:text-neutral-200 transition-colors">
+            <div className="w-full max-w-sm bg-white dark:bg-[#282828] rounded-xl border border-neutral-200 dark:border-[#383838] shadow-xs">
+                <div className="p-6 sm:p-8 space-y-6">
+                    <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 text-center tracking-tight">
+                        Create your <span className="text-[#00b8a3]">CodeDSA</span> account
                     </h1>
 
-                    <form onSubmit={register} className="space-y-4">
+                    <form onSubmit={register} className="space-y-3.5">
                         <div>
-                            <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            <label htmlFor="username" className="block mb-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300">
                                 Username
                             </label>
                             <input
                                 onChange={(e) => setUsername(e.target.value)}
                                 type="text"
                                 id="username"
-                                className="w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-indigo-600 focus:border-indigo-600 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                                className="w-full px-3 py-2 text-xs sm:text-sm rounded-md border border-neutral-200 dark:border-[#383838] bg-neutral-50 dark:bg-[#1e1e1e] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#00b8a3]"
                                 placeholder="Enter your username"
                                 required
                             />
                         </div>
                         <div>
-                            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Your email
+                            <label htmlFor="email" className="block mb-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                                Email
                             </label>
                             <input
                                 onChange={(e) => setEmail(e.target.value)}
                                 type="email"
                                 id="email"
-                                className="w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-indigo-600 focus:border-indigo-600 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                                placeholder="name@company.com"
+                                className="w-full px-3 py-2 text-xs sm:text-sm rounded-md border border-neutral-200 dark:border-[#383838] bg-neutral-50 dark:bg-[#1e1e1e] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#00b8a3]"
+                                placeholder="name@domain.com"
                                 required
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            <label htmlFor="password" className="block mb-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300">
                                 Password
                             </label>
                             <input
@@ -92,52 +82,32 @@ const Signup = () => {
                                 type="password"
                                 id="password"
                                 placeholder="••••••••"
-                                className="w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-indigo-600 focus:border-indigo-600 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                                className="w-full px-3 py-2 text-xs sm:text-sm rounded-md border border-neutral-200 dark:border-[#383838] bg-neutral-50 dark:bg-[#1e1e1e] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[#00b8a3]"
                                 required
                             />
                         </div>
-                        <div>
-                            <label htmlFor="confirm-password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Confirm Password
-                            </label>
-                            <input
 
-                                type="password"
-                                id="confirm-password"
-                                placeholder="••••••••"
-                                className="w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-indigo-600 focus:border-indigo-600 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                                required
-                            />
-                        </div>
-                        {/* <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center text-gray-500 dark:text-gray-300">
-                                <input
-                                    type="checkbox"
-                                    className="mr-2 w-4 h-4 rounded border border-gray-300 bg-gray-50 focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-indigo-600"
-                                    required
-                                />
-                                I agree to the terms and conditions
-                            </label>
-                        </div> */}
-                        <div className='w-full flex justify-center'>
-                            <button
-                                disabled={isSignuping}
-                                type="submit"
-                                className="w-full py-2.5 px-5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-                            >
-                                {
-                                    isSignuping ? "Signuping" : "Sign Up"
-                                }
-                            </button>
-                        </div>
-                        <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+                        {error && (
+                            <div className="text-xs text-red-500">
+                                {error}
+                            </div>
+                        )}
+
+                        <button
+                            disabled={isSignuping}
+                            type="submit"
+                            className="w-full py-2 px-4 text-xs sm:text-sm font-semibold text-white bg-[#00b8a3] hover:bg-[#00a390] rounded-md transition cursor-pointer shadow-xs disabled:opacity-50 mt-2"
+                        >
+                            {isSignuping ? "Creating Account..." : "Create Account"}
+                        </button>
+
+                        <p className="text-xs text-center text-neutral-500 dark:text-neutral-400 pt-1">
                             Already have an account?{' '}
-                            <Link to="/signin" className="font-medium text-indigo-600 hover:underline dark:text-indigo-500">
+                            <Link to="/signin" className="font-medium text-[#00b8a3] hover:underline">
                                 Sign in
                             </Link>
                         </p>
                     </form>
-
                 </div>
             </div>
         </div>
