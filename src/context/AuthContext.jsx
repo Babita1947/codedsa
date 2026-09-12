@@ -1,3 +1,5 @@
+//This code creates a global authentication system for your React application.
+
 import { authEndpoints } from "@/services/api";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -20,7 +22,7 @@ export const AuthProvider = ({ children }) => {
             navigate("/signin");
             return;
         }
-    }, [isAuthenticated]);
+    }, []);
 
     useEffect(() => {
         // sabse pehle token ko frontend se uthayenge
@@ -34,48 +36,45 @@ export const AuthProvider = ({ children }) => {
                     headers: {
                         Authorization: "Bearer " + token
                     }
-                })
+                });
                 console.log("verify token response", res)
                 if (res?.status == 200) {
                     setIsAuthenticated(true);
                     setLoading(false);
 
-                    if(res?.data?.role==="ADMIN"){
+                    if (res?.data?.role === "ADMIN") {
                         setIsAdmin(true);
                     }
                 }
             } catch (error) {
-                console.log("fasfdjkajdsfkasdf")
+                console.log("Verification of token in auth context failed!!")
                 setLoading(false);
                 setIsAuthenticated(false);
                 localStorage.removeItem("token");
             }
-
         }
-
         verifyToken();
-
     }, [])
 
 
-    const login = (token,role)=>{
-        if(!token)
-            return ;
-    
-        localStorage.setItem("token",token);
+    const login = (token, role) => {
+        if (!token)
+            return;
+
+        localStorage.setItem("token", token);
         setIsAuthenticated(true);
-        if(role==="ADMIN")
+        if (role === "ADMIN")
             setIsAdmin(true);
     }
 
-    const onLogout = ()=>{
+    const onLogout = () => {
         localStorage.removeItem("token");
         setIsAuthenticated(false);
         setIsAdmin(false);
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, loading, login, onLogout ,isAdmin}}>
+        <AuthContext.Provider value={{ isAuthenticated, loading, login, onLogout, isAdmin }}>
             {children}
         </AuthContext.Provider>
     )
