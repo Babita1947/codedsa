@@ -1,20 +1,24 @@
 import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 export const adminauthMiddleware = (req, res, next) => {
   try {
     let token;
-    if (req.headers.authorization?.startsWith("Bearer")) {
+    if (req.headers.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
+    } else if (req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    if (!token) {
-      return res.status(400).json({
+    if (!token || token === "undefined" || token === "null") {
+      return res.status(401).json({
         success: false,
-        message: "Missing Token",
+        message: "Missing or invalid token",
       });
     }
 
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET_KEY || process.env.JWT_SECRET;
+    const payload = jwt.verify(token, secret);
     console.log("Payload", payload);
 
     if (payload.role !== "ADMIN") {
@@ -28,9 +32,9 @@ export const adminauthMiddleware = (req, res, next) => {
     next();
   } catch (error) {
     console.error("Error in middleware:", error);
-    return res.status(500).json({
+    return res.status(401).json({
       success: false,
-      message: "Internal Server Error in auth middleware",
+      message: "Invalid or expired token",
     });
   }
 };
