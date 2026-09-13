@@ -87,7 +87,7 @@ export const loginController = async (req, res) => {
         const payload = {
             user_id: user_exist._id,
             email: user_exist.email,
-            role: user_exist.role //  make sure your User model has a `role` field
+            role: user_exist.role 
         };
 
 

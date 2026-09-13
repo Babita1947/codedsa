@@ -17,7 +17,7 @@ export const adminauthMiddleware = (req, res, next) => {
       });
     }
 
-    const secret = process.env.JWT_SECRET_KEY || process.env.JWT_SECRET;
+    const secret = process.env.JWT_SECRET_KEY;
     const payload = jwt.verify(token, secret);
     console.log("Payload", payload);
 
